@@ -83,3 +83,57 @@ h2 {
   text-align: center;
   margin-bottom: 1rem;
 }
+
+/* Navbar styling */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.7rem 2rem;
+  background: #333; /* Default dark background */
+  color: #fff;
+  position: sticky; /* Makes navbar stick to top */
+  top: 0;
+  z-index: 1; /* Ensures navbar is above other content */
+}
+
+.navbar ul {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.navbar a {
+  color: #fff;
+  padding: 0.45rem;
+  margin: 0 0.25rem;
+  text-decoration: none;
+}
+
+.navbar a:hover {
+  color: #61dafb; /* React blue for hover */
+}
+
+.navbar h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.navbar h1 a {
+  padding: 0; /* Reset padding for the brand link */
+}
+
+/* Utility class for dark background (can be used on other elements too) */
+.bg-dark {
+  background: #333;
+  color: #fff;
+}
+
+/* For hiding text on smaller screens, if icons are used */
+.hide-sm {
+  /* display: none; */ /* Uncomment if you want to hide text on small screens */
+}
+
+/* If using Font Awesome icons, ensure it's linked in public/index.html */
+/* Example for Font Awesome: <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" /> */
