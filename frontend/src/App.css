@@ -1,0 +1,85 @@
+.App {
+  /* text-align: center; */ /* Optional: Keep or remove */
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* General container for centering content and providing some padding */
+.container {
+  max-width: 1100px;
+  margin: auto; /* Centers the container */
+  overflow: hidden; /* Clears floats if any children use them */
+  padding: 0 2rem; /* Adds some horizontal padding */
+  margin-top: 2rem; /* Adds some space from the top */
+}
+
+/* Basic form styling (can be expanded) */
+form div {
+  margin-bottom: 0.5rem;
+}
+
+form input[type='text'],
+form input[type='email'],
+form input[type='password'] {
+  display: block;
+  width: 100%;
+  padding: 0.4rem;
+  font-size: 1.2rem;
+  border: 1px solid #ccc;
+  box-sizing: border-box; /* So padding doesn't increase width */
+}
+
+form input[type='submit'] {
+  display: block;
+  width: 100%;
+  padding: 0.5rem;
+  background: #333;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  margin-top: 1rem;
+}
+
+form input[type='submit']:hover {
+  background: #444;
+}
+
+/* Basic heading style */
+h2 {
+  text-align: center;
+  margin-bottom: 1rem;
+}
