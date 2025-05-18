@@ -7,6 +7,7 @@ export const AuthContext = createContext();
 const authReducer = (state, action) => {
   switch (action.type) {
     case 'USER_LOADED':
+    case 'PROFILE_UPDATE_SUCCESS':
       return {
         ...state,
         isAuthenticated: true,
@@ -98,6 +99,24 @@ export const AuthProvider = ({ children }) => {
     dispatch({ type: 'LOGOUT' });
   };
 
+  // Update User Profile
+  const updateProfile = async (formData) => {
+    if (!state.token) {
+      dispatch({ type: 'AUTH_ERROR' });
+      throw new Error('No token, authorization denied');
+    }
+    try {
+      const updatedUser = await api.put('/api/users/me', formData, state.token);
+      dispatch({ type: 'PROFILE_UPDATE_SUCCESS', payload: updatedUser });
+      // Optionally: show a success message to the user
+    } catch (err) {
+      console.error('Update profile error:', err);
+      // Optionally: dispatch another error type for profile update failure
+      // dispatch({ type: 'PROFILE_UPDATE_ERROR', payload: err.message });
+      throw err; // Re-throw to be handled in the component
+    }
+  };
+
   return (
     <AuthContext.Provider value={{
       token: state.token,
@@ -106,8 +125,8 @@ export const AuthProvider = ({ children }) => {
       user: state.user,
       signup,
       login,
-      logout
-      // loadUser is internal to the context usually, triggered by token presence
+      logout,
+      updateProfile
     }}>
       {!state.loading && children} 
     </AuthContext.Provider>

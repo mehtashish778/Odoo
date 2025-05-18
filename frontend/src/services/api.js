@@ -32,8 +32,21 @@ const api = {
     } catch (error) {
       throw error.response ? error.response.data : new Error('An API error occurred');
     }
+  },
+  put: async (endpoint, data, token) => {
+    try {
+      const res = await axios.put(endpoint, data, {
+        headers: {
+          'Content-Type': 'application/json',
+          'x-auth-token': token // Send token for protected PUT routes
+        }
+      });
+      return res.data;
+    } catch (error) {
+      throw error.response ? error.response.data : new Error('An API error occurred');
+    }
   }
-  // You can add other methods like put, delete as needed
+  // You can add other methods like delete as needed
 };
 
 export default api; 

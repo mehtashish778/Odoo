@@ -14,7 +14,14 @@ const Navbar = () => {
   const authLinks = (
     <ul>
       <li>
-        <Link to='#!'>Hello, {user && user.email ? user.email.split('@')[0] : 'User'}</Link> {/* Display part of email or generic user */} 
+        <Link to='/profile'> {/* Link to Profile page */}
+          <i className="fas fa-user"></i> <span className="hide-sm">Profile</span>
+        </Link>
+      </li>
+      <li>
+        <Link to='/dashboard'> {/* Link to Dashboard page */}
+          <i className="fas fa-tachometer-alt"></i> <span className="hide-sm">Dashboard</span>
+        </Link>
       </li>
       <li>
         <a onClick={onLogout} href='#!'>

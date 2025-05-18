@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; // For redirection
 import { AuthContext } from '../../context/AuthContext';
 // We will need an API service to call the backend, or use fetch directly
@@ -9,13 +9,14 @@ const Signup = () => {
   const { signup, isAuthenticated } = useContext(AuthContext);
 
   const [formData, setFormData] = useState({
+    name: '',
     email: '',
     password: '',
     password2: '' // For password confirmation
   });
   const [error, setError] = useState(''); // To display errors to the user
 
-  const { email, password, password2 } = formData;
+  const { name, email, password, password2 } = formData;
 
   const onChange = e => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -33,7 +34,7 @@ const Signup = () => {
       return;
     }
     try {
-      await signup({ email, password });
+      await signup({ name, email, password });
       // Signup successful, AuthContext will set isAuthenticated to true
       // Navigate to a protected route or homepage
       // No need to navigate immediately, useEffect below will handle it.
@@ -45,7 +46,7 @@ const Signup = () => {
   };
 
   // Redirect if already authenticated
-  React.useEffect(() => {
+  useEffect(() => {
     if (isAuthenticated) {
       navigate('/'); // Navigate to homepage or dashboard
     }
@@ -56,6 +57,15 @@ const Signup = () => {
       <h2>Sign Up</h2>
       {error && <p style={{ color: 'red' }}>{error}</p>} 
       <form onSubmit={onSubmit}>
+        <div>
+          <input 
+            type="text" 
+            placeholder="Name (Optional)" 
+            name="name" 
+            value={name} 
+            onChange={onChange} 
+          />
+        </div>
         <div>
           <input 
             type="email" 

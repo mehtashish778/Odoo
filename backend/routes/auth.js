@@ -10,12 +10,12 @@ const authMiddleware = require('../middleware/authMiddleware'); // Import auth m
 // @desc    Register a new user
 // @access  Public
 router.post('/signup', async (req, res) => {
-  const { email, password } = req.body;
+  const { name, email, password } = req.body; // Added name
 
   try {
     // Basic validation (more comprehensive validation needed later)
     if (!email || !password) {
-      return res.status(400).json({ message: 'Please enter all fields' });
+      return res.status(400).json({ message: 'Email and password are required' });
     }
 
     // Check if user already exists (in our in-memory array)
@@ -30,12 +30,13 @@ router.post('/signup', async (req, res) => {
 
     const newUser = {
       id: users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1, // More robust ID
+      name: name || '', // Add name, default to empty string if not provided
       email,
       password: hashedPassword // Store hashed password
     };
 
     users.push(newUser);
-    console.log('Users array after signup:', users.map(u => ({id: u.id, email: u.email}))); // Don't log passwords
+    console.log('Users array after signup:', users.map(u => ({id: u.id, name: u.name, email: u.email}))); // Don't log passwords
 
     // Generate JWT
     const payload = { user: { id: newUser.id } }; // Add user id to payload
@@ -48,7 +49,7 @@ router.post('/signup', async (req, res) => {
         res.status(201).json({
           message: 'User registered successfully',
           token,
-          user: { id: newUser.id, email: newUser.email } 
+          user: { id: newUser.id, name: newUser.name, email: newUser.email } // Return name
         });
       }
     );
@@ -94,7 +95,7 @@ router.post('/login', async (req, res) => {
         res.json({
           message: 'Login successful',
           token,
-          user: { id: user.id, email: user.email }
+          user: { id: user.id, name: user.name, email: user.email } // Return name
         });
       }
     );
@@ -118,7 +119,7 @@ router.get('/user', authMiddleware, async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
     // Return user info (excluding password)
-    res.json({ id: user.id, email: user.email });
+    res.json({ id: user.id, name: user.name, email: user.email }); // Return name
   } catch (error) {
     console.error('Get user error:', error);
     res.status(500).send('Server Error');
