@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // You might want to configure a base URL if your API is not on the same host/port
 // For now, we assume it's served from the same origin or proxied.
-// axios.defaults.baseURL = 'http://localhost:5001/api'; // Example
+axios.defaults.baseURL = 'http://localhost:5001'; // Remove duplicate /api path
 
 const api = {
   post: async (endpoint, data) => {

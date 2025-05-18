@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors'); // Import CORS package
 const app = express();
 const PORT = process.env.PORT || 5001; // Changed from 5000 to 5001 to avoid potential conflict with React dev server
 
@@ -7,6 +8,8 @@ const userRoutes = require('./routes/users'); // Import user routes
 const projectRoutes = require('./routes/projects'); // Import project routes
 const taskRoutes = require('./routes/tasks'); // Import task routes
 
+// Enable CORS for all routes
+app.use(cors());
 app.use(express.json()); // Middleware to parse JSON bodies
 
 // A simple test route
