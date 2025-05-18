@@ -5,13 +5,18 @@ import axios from 'axios';
 axios.defaults.baseURL = 'http://localhost:5001'; // Remove duplicate /api path
 
 const api = {
-  post: async (endpoint, data) => {
+  post: async (endpoint, data, token = null) => {
     try {
-      const res = await axios.post(endpoint, data, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+      const headers = {
+        'Content-Type': 'application/json'
+      };
+      
+      // Add token to headers if provided
+      if (token) {
+        headers['x-auth-token'] = token;
+      }
+      
+      const res = await axios.post(endpoint, data, { headers });
       return res.data;
     } catch (error) {
       // Handle or throw error to be caught by the caller
