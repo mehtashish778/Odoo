@@ -45,8 +45,20 @@ const api = {
     } catch (error) {
       throw error.response ? error.response.data : new Error('An API error occurred');
     }
+  },
+  delete: async (endpoint, token) => {
+    try {
+      const res = await axios.delete(endpoint, {
+        headers: {
+          'Content-Type': 'application/json',
+          'x-auth-token': token // Send token for protected DELETE routes
+        }
+      });
+      return res.data;
+    } catch (error) {
+      throw error.response ? error.response.data : new Error('An API error occurred');
+    }
   }
-  // You can add other methods like delete as needed
 };
 
 export default api; 

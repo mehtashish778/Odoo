@@ -14,21 +14,23 @@ const Navbar = () => {
   const authLinks = (
     <ul>
       <li>
-        <Link to='/profile'> {/* Link to Profile page */}
-          <i className="fas fa-user"></i> <span className="hide-sm">Profile</span>
+        <Link to='/projects'>
+          <i className="fas fa-list-ul"></i> <span className="hide-sm">Projects</span>
         </Link>
       </li>
-      <li>
-        <Link to='/dashboard'> {/* Link to Dashboard page */}
-          <i className="fas fa-tachometer-alt"></i> <span className="hide-sm">Dashboard</span>
-        </Link>
-      </li>
-      <li>
-        <a onClick={onLogout} href='#!'>
-          <i className="fas fa-sign-out-alt"></i> <span className="hide-sm">Logout</span>
+      <li className="dropdown">
+        <a href="#!" className="dropdown-toggle">
+          <i className="fas fa-user-circle"></i> <span className="hide-sm">{user?.name || user?.email?.split('@')[0] || 'Account'}</span>
         </a>
+        <div className="dropdown-menu">
+          <Link to='/profile'>
+            <i className="fas fa-user"></i> Profile
+          </Link>
+          <a onClick={onLogout} href="#!">
+            <i className="fas fa-sign-out-alt"></i> Logout
+          </a>
+        </div>
       </li>
-      {/* Add other links for authenticated users here, e.g., Profile, Dashboard */}
     </ul>
   );
 
@@ -43,7 +45,9 @@ const Navbar = () => {
   return (
     <nav className='navbar bg-dark'> {/* Basic styling, can be improved */}
       <h1>
-        <Link to='/'><i className="fas fa-code"></i> SynergySphere</Link> {/* Placeholder icon */}
+        <Link to='/'>
+          <i className="fas fa-tasks"></i> SynergySphere
+        </Link> {/* Placeholder icon */}
       </h1>
       {isAuthenticated ? authLinks : guestLinks}
     </nav>
