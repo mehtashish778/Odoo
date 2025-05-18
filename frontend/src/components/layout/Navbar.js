@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
+import Notifications from './Notifications';
 
 const Navbar = () => {
   const { isAuthenticated, user, logout } = useContext(AuthContext);
@@ -18,6 +19,11 @@ const Navbar = () => {
           <i className="fas fa-list-ul"></i> <span className="hide-sm">Projects</span>
         </Link>
       </li>
+      {isAuthenticated && (
+        <li className="notifications-li">
+          <Notifications />
+        </li>
+      )}
       <li className="dropdown">
         <a href="#!" className="dropdown-toggle">
           <i className="fas fa-user-circle"></i> <span className="hide-sm">{user?.name || user?.email?.split('@')[0] || 'Account'}</span>

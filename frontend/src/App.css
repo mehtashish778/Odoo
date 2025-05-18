@@ -130,9 +130,15 @@ h2 {
   color: #fff;
 }
 
-/* For hiding text on smaller screens, if icons are used */
+/* Hide on small screens */
 .hide-sm {
-  /* display: none; */ /* Uncomment if you want to hide text on small screens */
+  display: inline-block;
+}
+
+@media (max-width: 768px) {
+  .hide-sm {
+    display: none;
+  }
 }
 
 /* If using Font Awesome icons, ensure it's linked in public/index.html */
@@ -284,6 +290,8 @@ h2 {
   background: #f9f9f9;
   border-radius: 4px;
   padding: 1rem;
+  transition: background-color 0.2s ease;
+  min-height: 200px;
 }
 
 .task-column h3 {
@@ -292,19 +300,29 @@ h2 {
   border-bottom: 1px solid #eee;
 }
 
+.task-column.drag-over {
+  background-color: rgba(3, 102, 214, 0.1);
+  border-radius: 4px;
+}
+
 .task-card {
   background: white;
   border: 1px solid #ddd;
   border-radius: 4px;
   padding: 0.75rem;
   margin-bottom: 0.75rem;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: grab;
+  position: relative;
+  transition: all 0.2s ease;
 }
 
 .task-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.task-card:active {
+  cursor: grabbing;
 }
 
 .task-card h4 {
@@ -431,21 +449,410 @@ h2 {
   padding: 0.25rem 0.5rem;
 }
 
-/* Responsive design */
+/* Enhanced mobile responsiveness */
 @media (max-width: 768px) {
   .container {
-    padding: 0 1rem;
+    padding: 1rem;
   }
   
-  .task-board {
-    grid-template-columns: 1fr;
+  /* Navbar mobile styling */
+  .navbar {
+    flex-direction: column;
+    padding: 0.5rem;
+  }
+  
+  .navbar h1 {
+    margin-bottom: 0.5rem;
+  }
+  
+  .navbar ul {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .navbar li {
+    margin: 0.25rem 0;
+    width: 100%;
+    text-align: center;
+  }
+  
+  .dropdown-menu {
+    position: static;
+    display: none;
+    width: 100%;
+    box-shadow: none;
+    background-color: #444;
+  }
+  
+  .dropdown:hover .dropdown-menu {
+    display: block;
+  }
+  
+  /* Project dashboard mobile styling */
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .dashboard-header h2 {
+    margin-bottom: 1rem;
   }
   
   .project-list {
     grid-template-columns: 1fr;
   }
   
-  .hide-sm {
-    display: none;
+  /* Task board mobile styling */
+  .task-board {
+    flex-direction: column;
+  }
+  
+  .task-column {
+    width: 100%;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Form mobile styling */
+  form input[type='text'],
+  form input[type='email'],
+  form input[type='password'],
+  form textarea,
+  form select {
+    padding: 0.75rem;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .form-actions button {
+    width: 100%;
+    margin: 0.5rem 0;
+  }
+  
+  /* Comments mobile styling */
+  .comment-form textarea {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+  
+  .comment-card {
+    padding: 0.75rem;
+  }
+  
+  /* User profile mobile styling */
+  .profile-container {
+    padding: 1rem;
+  }
+}
+
+/* Additional small screen adjustments */
+@media (max-width: 576px) {
+  .container {
+    padding: 0.75rem;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+  }
+  
+  /* Login/Signup forms */
+  form div {
+    margin-bottom: 0.75rem;
+  }
+  
+  /* Project card adjustments */
+  .project-card {
+    padding: 0.75rem;
+  }
+  
+  /* Task detail view */
+  .task-detail-container {
+    padding: 0.75rem;
+  }
+}
+
+/* Dark mode support (optional) */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #121212;
+    color: #f5f5f5;
+  }
+  
+  .task-card, .project-card, .comment-card {
+    background-color: #2a2a2a;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  }
+  
+  form input[type='text'],
+  form input[type='email'],
+  form input[type='password'],
+  form textarea,
+  form select {
+    background-color: #333;
+    color: #f5f5f5;
+    border-color: #444;
+  }
+  
+  .btn-primary, .btn-add, .btn-submit {
+    background-color: #0d6efd;
+  }
+  
+  .btn-secondary, .btn-cancel {
+    background-color: #5a6268;
+  }
+}
+
+/* Project tabs */
+.project-tabs {
+  display: flex;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #ccc;
+}
+
+.tab-button {
+  padding: 0.5rem 1rem;
+  margin-right: 0.5rem;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.tab-button:hover {
+  color: #0366d6;
+}
+
+.tab-button.active {
+  color: #0366d6;
+  border-bottom: 3px solid #0366d6;
+}
+
+/* Project comments */
+.project-comments {
+  margin-top: 1rem;
+}
+
+.comment-form {
+  margin-bottom: 2rem;
+}
+
+.comment-form textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+  resize: vertical;
+}
+
+.no-comments {
+  color: #666;
+  font-style: italic;
+  margin: 1rem 0;
+}
+
+.comment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.comment-card {
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  padding: 1rem;
+  border-left: 3px solid #0366d6;
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.comment-author {
+  font-weight: bold;
+}
+
+.comment-date {
+  color: #666;
+}
+
+.comment-content {
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+
+.comment-actions {
+  margin-top: 0.5rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Mobile responsiveness for comments */
+@media (max-width: 768px) {
+  .comment-header {
+    flex-direction: column;
+  }
+  
+  .comment-date {
+    margin-top: 0.25rem;
+  }
+}
+
+/* Floating error message */
+.error-message.floating {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 10px 15px;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Notifications Styling */
+.notifications-container {
+  position: relative;
+}
+
+.notifications-bell {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.1rem;
+  cursor: pointer;
+  position: relative;
+  padding: 0.45rem;
+}
+
+.notifications-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #ff4757;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: bold;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notifications-panel {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 300px;
+  max-height: 400px;
+  background-color: white;
+  border-radius: 4px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.notifications-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e1e4e8;
+}
+
+.notifications-header h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.mark-all-read {
+  background: none;
+  border: none;
+  color: #0366d6;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.notifications-content {
+  overflow-y: auto;
+  flex-grow: 1;
+  max-height: calc(400px - 50px);
+}
+
+.notifications-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.notification-item {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e1e4e8;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.notification-item:last-child {
+  border-bottom: none;
+}
+
+.notification-item:hover {
+  background-color: #f6f8fa;
+}
+
+.notification-item.unread {
+  background-color: #f0f7ff;
+}
+
+.notification-item.unread:hover {
+  background-color: #e3f2fd;
+}
+
+.notification-content {
+  font-size: 0.9rem;
+  margin-bottom: 0.35rem;
+}
+
+.notification-time {
+  font-size: 0.75rem;
+  color: #666;
+}
+
+.loading-text, .error-text, .no-notifications {
+  padding: 1rem;
+  text-align: center;
+  color: #666;
+  font-style: italic;
+}
+
+/* Mobile responsiveness for notifications */
+@media (max-width: 768px) {
+  .notifications-panel {
+    width: 100%;
+    position: fixed;
+    top: 60px; /* Adjust based on your navbar height */
+    right: 0;
+    left: 0;
+    max-height: calc(100vh - 60px);
   }
 }

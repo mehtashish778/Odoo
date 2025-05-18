@@ -3,6 +3,7 @@ const router = express.Router();
 const authMiddleware = require('../middleware/authMiddleware');
 const projects = require('../models/Project');
 const users = require('../models/User');
+const { createNotification } = require('./notifications');
 
 // @route   GET api/projects
 // @desc    Get all projects for the logged-in user

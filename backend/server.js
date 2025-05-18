@@ -7,6 +7,8 @@ const authRoutes = require('./routes/auth'); // Import auth routes
 const userRoutes = require('./routes/users'); // Import user routes
 const projectRoutes = require('./routes/projects'); // Import project routes
 const taskRoutes = require('./routes/tasks'); // Import task routes
+const commentRoutes = require('./routes/comments'); // Import comment routes
+const { router: notificationRoutes } = require('./routes/notifications'); // Import notification routes
 
 // Enable CORS for all routes
 app.use(cors());
@@ -25,6 +27,10 @@ app.use('/api/users', userRoutes);
 app.use('/api/projects', projectRoutes);
 // Use task routes
 app.use('/api/tasks', taskRoutes);
+// Use comment routes
+app.use('/api/comments', commentRoutes);
+// Use notification routes
+app.use('/api/notifications', notificationRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

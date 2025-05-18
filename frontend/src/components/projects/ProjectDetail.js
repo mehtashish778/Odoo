@@ -2,6 +2,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import api from '../../services/api';
+import ProjectComments from './ProjectComments';
+import TaskBoard from './TaskBoard';
 
 const ProjectDetail = () => {
   const { projectId } = useParams();
@@ -12,6 +14,7 @@ const ProjectDetail = () => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [activeTab, setActiveTab] = useState('tasks'); // 'tasks' or 'discussion'
 
   // Fetch project data and tasks
   useEffect(() => {
@@ -40,6 +43,13 @@ const ProjectDetail = () => {
     navigate(`/projects/${projectId}/tasks/new`);
   };
 
+  // Handler for task updates (used by TaskBoard component)
+  const handleTaskUpdate = (updatedTask) => {
+    setTasks(tasks.map(task => 
+      task.id === updatedTask.id ? updatedTask : task
+    ));
+  };
+
   if (loading) {
     return <div>Loading project...</div>;
   }
@@ -62,11 +72,6 @@ const ProjectDetail = () => {
     );
   }
 
-  // Group tasks by status
-  const pendingTasks = tasks.filter(task => task.status === 'pending');
-  const inProgressTasks = tasks.filter(task => task.status === 'in-progress');
-  const completedTasks = tasks.filter(task => task.status === 'completed');
-
   return (
     <div className="project-detail-container">
       <div className="project-header">
@@ -87,94 +92,31 @@ const ProjectDetail = () => {
         </div>
       )}
 
-      <div className="task-board">
-        {/* Pending Tasks Column */}
-        <div className="task-column pending-column">
-          <h3>To Do</h3>
-          {pendingTasks.length === 0 ? (
-            <p className="no-tasks">No pending tasks</p>
-          ) : (
-            pendingTasks.map(task => (
-              <div 
-                key={task.id} 
-                className="task-card"
-                onClick={() => navigate(`/projects/${projectId}/tasks/${task.id}`)}
-              >
-                <h4>{task.title}</h4>
-                {task.dueDate && (
-                  <p className="task-due-date">
-                    <i className="fas fa-calendar"></i> 
-                    {new Date(task.dueDate).toLocaleDateString()}
-                  </p>
-                )}
-                {task.assigneeId && (
-                  <div className="task-assignee">
-                    <i className="fas fa-user-circle"></i> {/* Replace with user's name or avatar later */}
-                  </div>
-                )}
-              </div>
-            ))
-          )}
-        </div>
-
-        {/* In Progress Tasks Column */}
-        <div className="task-column in-progress-column">
-          <h3>In Progress</h3>
-          {inProgressTasks.length === 0 ? (
-            <p className="no-tasks">No tasks in progress</p>
-          ) : (
-            inProgressTasks.map(task => (
-              <div 
-                key={task.id} 
-                className="task-card"
-                onClick={() => navigate(`/projects/${projectId}/tasks/${task.id}`)}
-              >
-                <h4>{task.title}</h4>
-                {task.dueDate && (
-                  <p className="task-due-date">
-                    <i className="fas fa-calendar"></i> 
-                    {new Date(task.dueDate).toLocaleDateString()}
-                  </p>
-                )}
-                {task.assigneeId && (
-                  <div className="task-assignee">
-                    <i className="fas fa-user-circle"></i>
-                  </div>
-                )}
-              </div>
-            ))
-          )}
-        </div>
-
-        {/* Completed Tasks Column */}
-        <div className="task-column completed-column">
-          <h3>Completed</h3>
-          {completedTasks.length === 0 ? (
-            <p className="no-tasks">No completed tasks</p>
-          ) : (
-            completedTasks.map(task => (
-              <div 
-                key={task.id} 
-                className="task-card"
-                onClick={() => navigate(`/projects/${projectId}/tasks/${task.id}`)}
-              >
-                <h4>{task.title}</h4>
-                {task.dueDate && (
-                  <p className="task-due-date">
-                    <i className="fas fa-calendar"></i> 
-                    {new Date(task.dueDate).toLocaleDateString()}
-                  </p>
-                )}
-                {task.assigneeId && (
-                  <div className="task-assignee">
-                    <i className="fas fa-user-circle"></i>
-                  </div>
-                )}
-              </div>
-            ))
-          )}
-        </div>
+      <div className="project-tabs">
+        <button 
+          className={`tab-button ${activeTab === 'tasks' ? 'active' : ''}`}
+          onClick={() => setActiveTab('tasks')}
+        >
+          Tasks
+        </button>
+        <button 
+          className={`tab-button ${activeTab === 'discussion' ? 'active' : ''}`}
+          onClick={() => setActiveTab('discussion')}
+        >
+          Discussion
+        </button>
       </div>
+
+      {activeTab === 'tasks' ? (
+        <TaskBoard
+          projectId={parseInt(projectId)}
+          tasks={tasks}
+          token={token}
+          onTaskUpdate={handleTaskUpdate}
+        />
+      ) : (
+        <ProjectComments projectId={parseInt(projectId)} />
+      )}
     </div>
   );
 };

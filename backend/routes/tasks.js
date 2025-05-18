@@ -4,6 +4,7 @@ const authMiddleware = require('../middleware/authMiddleware');
 const tasks = require('../models/Task');
 const projects = require('../models/Project');
 const users = require('../models/User');
+const { createNotification } = require('./notifications');
 
 // Helper function to check if user has access to a project
 const hasProjectAccess = (projectId, userId) => {
@@ -71,13 +72,13 @@ router.post('/', authMiddleware, async (req, res) => {
     }
     
     // Check if project exists and user has access
-    if (!hasProjectAccess(projectId, req.user.id)) {
+    const project = projects.find(p => p.id === projectId);
+    if (!project || !hasProjectAccess(projectId, req.user.id)) {
       return res.status(403).json({ message: 'Not authorized to create tasks for this project' });
     }
     
     // Validate assignee has access to the project if provided
     if (assigneeId) {
-      const project = projects.find(p => p.id === projectId);
       if (!project.members.includes(assigneeId)) {
         return res.status(400).json({ message: 'Assignee must be a member of the project' });
       }
@@ -98,6 +99,28 @@ router.post('/', authMiddleware, async (req, res) => {
     };
     
     tasks.push(newTask);
+    
+    // Create notification for the assignee if one is assigned
+    if (assigneeId && assigneeId !== req.user.id) {
+      createNotification(
+        assigneeId,
+        `You were assigned a new task: ${title}`,
+        'task-assigned',
+        newTask.id
+      );
+    }
+    
+    // Create notifications for all project members except the creator
+    project.members.forEach(memberId => {
+      if (memberId !== req.user.id) {
+        createNotification(
+          memberId,
+          `A new task was created in ${project.name}: ${title}`,
+          'task-created',
+          newTask.id
+        );
+      }
+    });
     
     res.status(201).json(newTask);
   } catch (error) {
@@ -127,10 +150,16 @@ router.put('/:id', authMiddleware, async (req, res) => {
       return res.status(403).json({ message: 'Not authorized to update this task' });
     }
     
+    // Get project for notifications
+    const project = projects.find(p => p.id === task.projectId);
+    
+    // Remember old values for change detection
+    const oldAssigneeId = task.assigneeId;
+    const oldStatus = task.status;
+    
     // Validate assignee if changing
-    if (assigneeId) {
-      const project = projects.find(p => p.id === task.projectId);
-      if (!project.members.includes(assigneeId)) {
+    if (assigneeId !== undefined) {
+      if (assigneeId && !project.members.includes(assigneeId)) {
         return res.status(400).json({ message: 'Assignee must be a member of the project' });
       }
     }
@@ -147,6 +176,39 @@ router.put('/:id', authMiddleware, async (req, res) => {
     };
     
     tasks[taskIndex] = updatedTask;
+    
+    // Create notification for the assignee if it changed and is not the current user
+    if (assigneeId && assigneeId !== oldAssigneeId && assigneeId !== req.user.id) {
+      createNotification(
+        assigneeId,
+        `You were assigned to task: ${updatedTask.title}`,
+        'task-assigned',
+        updatedTask.id
+      );
+    }
+    
+    // Create notification if status changed
+    if (status && status !== oldStatus) {
+      // Notify creator if they're not the one updating
+      if (task.createdBy !== req.user.id) {
+        createNotification(
+          task.createdBy,
+          `Task status changed to ${status}: ${updatedTask.title}`,
+          'task-status-changed',
+          updatedTask.id
+        );
+      }
+      
+      // Notify assignee if they're not the one updating
+      if (updatedTask.assigneeId && updatedTask.assigneeId !== req.user.id) {
+        createNotification(
+          updatedTask.assigneeId,
+          `Task status changed to ${status}: ${updatedTask.title}`,
+          'task-status-changed',
+          updatedTask.id
+        );
+      }
+    }
     
     res.json(updatedTask);
   } catch (error) {
@@ -177,6 +239,16 @@ router.delete('/:id', authMiddleware, async (req, res) => {
       !(project.createdBy === req.user.id || task.createdBy === req.user.id)
     ) {
       return res.status(403).json({ message: 'Not authorized to delete this task' });
+    }
+    
+    // Create notification for the assignee if they are not the one deleting
+    if (task.assigneeId && task.assigneeId !== req.user.id) {
+      createNotification(
+        task.assigneeId,
+        `A task assigned to you was deleted: ${task.title}`,
+        'task-deleted',
+        null
+      );
     }
     
     // Remove the task
