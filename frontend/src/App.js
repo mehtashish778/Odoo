@@ -5,8 +5,9 @@ import { AuthProvider, AuthContext } from './context/AuthContext';
 import Signup from './components/auth/Signup';
 import Login from './components/auth/Login';
 import Navbar from './components/layout/Navbar';
-// import Dashboard from './components/dashboard/Dashboard';
-// import PrivateRoute from './components/routing/PrivateRoute';
+import Dashboard from './components/dashboard/Dashboard';
+import PrivateRoute from './components/routing/PrivateRoute';
+import Profile from './components/profile/Profile';
 
 function App() {
   return (
@@ -17,7 +18,10 @@ function App() {
           <Routes>
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />
-            {/* <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} /> */}
+            <Route element={<PrivateRoute />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/profile" element={<Profile />} />
+            </Route>
             <Route path="/" element={ <HomePage /> } />
           </Routes>
         </div>
@@ -37,6 +41,9 @@ const HomePage = () => {
         <p>Hello, {user && user.email ? user.email : 'User'}! You are logged in.</p>
       ) : (
         <p>Please <a href="/login">login</a> or <a href="/signup">sign up</a>.</p>
+      )}
+      {isAuthenticated && (
+        <p><a href="/dashboard">Go to Dashboard</a></p>
       )}
     </div>
   );
